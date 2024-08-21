@@ -22,7 +22,7 @@ public class ExpenseGroupController {
     }
 
     // create new expense group
-    @PostMapping("/groups")
+    @PostMapping
     public ResponseEntity<ExpenseGroup> createGroup(@RequestBody ExpenseGroup group) {
         try {
             ExpenseGroup expenseGroup = expenseGroupService.createGroup(group);
@@ -33,7 +33,7 @@ public class ExpenseGroupController {
     }
 
     // get expenseGroupList
-    @GetMapping("/groups")
+    @GetMapping
     public ResponseEntity<List<ExpenseGroup>> getExpenseGroupList() {
         try {
             List<ExpenseGroup> groups = expenseGroupService.getAllExpenseGroup();
@@ -55,7 +55,21 @@ public class ExpenseGroupController {
         }
     }
 
-    // create expense for a group
+    // Update an ExpenseGroup
+    @PutMapping("/{groupId}")
+    public ResponseEntity<ExpenseGroup> updateExpenseGroup(@PathVariable Long groupId, @RequestBody ExpenseGroup expenseGroup) {
+        ExpenseGroup updatedExpenseGroup = expenseGroupService.updateExpenseGroup(groupId, expenseGroup);
+        return new ResponseEntity<>(updatedExpenseGroup, HttpStatus.OK);
+    }
+
+    // Delete an ExpenseGroup
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<Void> deleteExpenseGroup(@PathVariable Long groupId) {
+        expenseGroupService.deleteExpenseGroup(groupId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // create a new expense in a specific ExpenseGroup
     @PostMapping("/{groupId}/expenses")
     public ResponseEntity<Expense> createExpense(@PathVariable Long groupId, @RequestBody Expense expense) {
         try {
@@ -76,5 +90,27 @@ public class ExpenseGroupController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    // fetch a specific Expense by ID within a group
+    @GetMapping("/{groupId}/expenses/{expenseId}")
+    public ResponseEntity<Expense> getExpenseById(@PathVariable Long groupId, @PathVariable Long expenseId) {
+        Expense expense = expenseGroupService.findExpenseById(groupId, expenseId);
+        return new ResponseEntity<>(expense, HttpStatus.OK);
+    }
+
+    // update an expense within a specific ExpenseGroup
+    @PutMapping("/{groupId}/expenses/{expenseId}")
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long groupId, @PathVariable Long expenseId, @RequestBody Expense expense) {
+        Expense updatedExpense = expenseGroupService.updateExpense(groupId, expenseId, expense);
+        return new ResponseEntity<>(updatedExpense, HttpStatus.OK);
+    }
+
+    // Delete an Expense from a specific ExpenseGroup
+    @DeleteMapping("/{groupId}/expenses/{expenseId}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long groupId, @PathVariable Long expenseId) {
+        expenseGroupService.deleteExpense(groupId, expenseId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
 }
