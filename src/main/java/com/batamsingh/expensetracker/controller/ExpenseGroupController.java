@@ -8,10 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/expense-groups")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ExpenseGroupController {
 
     private final ExpenseGroupService expenseGroupService;
@@ -82,10 +85,29 @@ public class ExpenseGroupController {
 
     // fetch all expenses for a specific group
     @GetMapping("/{groupId}/expenses")
-    public ResponseEntity<List<Expense>> getAllExpenseForGroup(@PathVariable Long groupId) {
+    public ResponseEntity<Map<String, Object>> getAllExpenseForGroup(@PathVariable Long groupId) {
         try {
             List<Expense> expenses = expenseGroupService.getAllExpenseForGroup(groupId);
-            return ResponseEntity.status(HttpStatus.OK).body(expenses);
+
+            // calculating total expenses and income amount
+            double expenseAmount = 0.0;
+            double incomeAmount = 0.0;
+
+            for (Expense expense : expenses) {
+                if (expense.getAmount() >= 0) {
+                    incomeAmount += expense.getAmount();
+                } else if (expense.getAmount() < 0) {
+                    expenseAmount += Math.abs(expense.getAmount());
+                }
+            }
+
+            // creating a map to return both the expenses and the total amount
+            Map<String, Object> response = new HashMap<>();
+            response.put("expenses", expenses);
+            response.put("totalIncome", incomeAmount);
+            response.put("totalExpense", expenseAmount);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

@@ -33,6 +33,7 @@ public class ExpenseGroup {
     private Users user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "expenseGroup", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Expense> expenses;
 
     public ExpenseGroup() {

@@ -52,7 +52,7 @@ public class WebSecurityConfig {
 
         return http.csrf(customizer -> customizer.disable()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/expenses/**").authenticated()
                         .anyRequest().authenticated()).
                 httpBasic(Customizer.withDefaults()).
